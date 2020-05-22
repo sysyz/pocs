@@ -21,7 +21,7 @@ class DemoPOC(POCBase):
     appVersion = '1.x'
     vulType = 'SQL'
     desc = '''
-    pikachu靶场get请求SQL注入
+    pikachu靶场post请求SQL注入
     '''
     samples = []
     install_requires = ['']
